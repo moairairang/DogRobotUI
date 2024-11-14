@@ -1,38 +1,121 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Global Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #1e2124;
+  color: #ddd;
+  height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* Main App container */
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header section */
+.App-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 10px;
+  background-color: #282b30;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* Camera and 3D Object Layout */
+.main-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-rows: repeat(2, 1fr); /* 2 rows */
+  gap: 10px; /* Space between boxes */
+  padding: 10px;
+  flex-grow: 1; /* Allow this to grow to fill space */
+  overflow-y: auto; /* Enable scrolling if content overflows */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Common box styles */
+.camera-box,
+.object-box,
+.status-box,
+.robot-info-box,
+.servo-data-box {
+  background-color: #36393e;
+  border-radius: 8px;
+  padding: 10px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+
+/* Label styles */
+.camera-label,
+.imu-label,
+.key-pressed,
+.ESP32-response,
+h3 {
+  margin: 0;
+}
+
+/* Iframe styles */
+.camera-box iframe {
+  flex-grow: 1; /* Allow iframe to grow to fill the box */
+}
+
+/* Object box styles */
+.object-box {
+  position: relative; /* Relative positioning for IMU data */
+}
+
+/* IMU data positioning */
+.imu-label {
+  position: absolute;
+  bottom: 10px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+  color: white;
+}
+
+/* Robot info and servo data styles */
+.robot-info-box,
+.servo-data-box {
+  flex-grow: 1; /* Allow these to grow */
+}
+
+.reset-yaw-button {
+  width: 120px;  /* Adjust width as needed */
+  height: 50px;  /* Adjust height as needed */
+  position: absolute; /* Position the button inside the object box */
+  top: 10px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+  padding: 5px 10px; /* Button padding */
+  background-color: #282b30; /* Button color */
+  color: white; /* Button text color */
+  border: none; /* No border */
+  border-radius: 10px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  z-index: 10; /* Ensure it is above other elements */
+  font-size: 16px;
+}
+
+.reset-yaw-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+

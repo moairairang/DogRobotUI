@@ -248,17 +248,6 @@ const Box = ({ roll, pitch, yaw }) => {
         <div className="servo-data-box">
           <h3>Servo Data</h3>
           <div>Servo 1: 90°</div>
-          <div>Servo 2: 90°</div>
-          <div>Servo 3: 90°</div>
-          <div>Servo 4: 90°</div>
-          <div>Servo 5: 90°</div>
-          <div>Servo 6: 90°</div>
-          <div>Servo 7: 90°</div>
-          <div>Servo 8: 90°</div>
-          <div>Servo 9: 90°</div>
-          <div>Servo 10: 90°</div>
-          <div>Servo 11: 90°</div>
-          <div>Servo 12: 90°</div>
         </div>
       </div>
     </div>

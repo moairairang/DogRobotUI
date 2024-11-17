@@ -15,14 +15,24 @@ function App() {
   const [lastSentControllerData, setLastSentControllerData] = useState({ buttons: [], axes: [] });
   const [controllerDataSentTime, setControllerDataSentTime] = useState(0);
   const [keyAlreadySent, setKeyAlreadySent] = useState(false);
+  const [ipAddress, setIpAddress] = useState("");
 
-  const esp32KeyUrl = "http://192.168.1.4/sendKey";
-  const esp32ImuUrl = "http://192.168.1.4/getIMU";
-  const esp32ControllerUrl = "http://192.168.1.4/sendControllerData";
+  const esp32KeyUrl = useMemo(() => `http://${ipAddress}/sendKey`, [ipAddress]);
+  const esp32ImuUrl = useMemo(() => `http://${ipAddress}/getIMU`, [ipAddress]);
+  const esp32ControllerUrl = useMemo(() => `http://${ipAddress}/sendControllerData`, [ipAddress]);
 
   const buttonNames = useMemo(() => ({
     0: "A", 1: "B", 2: "X", 3: "Y", 4: "LB", 5: "RB", 6: "LT", 7: "RT", 8: "View", 9: "Menu", 10: "Left Stick", 11: "Right Stick", 12: "Up", 13: "Down", 14: "Left", 15: "Right",
   }), []);
+
+  const handleIpAddressChange = (event) => {
+    setIpAddress(event.target.value);
+  };
+  
+  const handleIpSubmit = (event) => {
+    event.preventDefault(); // Prevents the page from reloading on form submission
+    checkConnection(); // Calls the function to check connection with the entered IP
+  };
 
   const checkConnection = useCallback(() => {
     axios.get(esp32ImuUrl)
@@ -195,23 +205,53 @@ const Box = ({ roll, pitch, yaw }) => {
           <h1>Dogbot UI</h1>
         </div>
         <div className="header-right">
-          <h2>Status: {isConnected ? "Connected" : "Not Connected"}</h2>
+          <div className="connect-status">
+            <form onSubmit={handleIpSubmit} className="ip-form">
+              <input
+                type="text"
+                value={ipAddress}
+                onChange={handleIpAddressChange}
+                placeholder="Enter ESP32 IP"
+                className="ip-input"
+              />
+              <button type="submit" className="enter-button">Enter</button>
+            </form>
+            <h2>Status: {isConnected ? "Connected" : "Not Connected"}</h2>
+          </div>
         </div>
       </header>
   
       <div className="main-content">
         <div className="camera-box">
           <div className="camera-label">Camera 1 Stream</div>
-          <iframe src="http://192.168.1.131/web/admin.html" width="100%" height="100%" style={{ border: "none" }} title="Camera 1 Stream"></iframe>
+          <iframe
+            src="http://192.168.1.131/web/admin.html"
+            width="100%"
+            height="100%"
+            style={{ border: "none" }}
+            title="Camera 1 Stream"
+          ></iframe>
         </div>
   
         <div className="camera-box">
           <div className="camera-label">Camera 2 Stream</div>
-          <iframe src="http://192.168.1.131/web/admin.html" width="100%" height="100%" style={{ border: "none" }} title="Camera 2 Stream"></iframe>
+          <iframe
+            src="http://192.168.1.131/web/admin.html"
+            width="100%"
+            height="100%"
+            style={{ border: "none" }}
+            title="Camera 2 Stream"
+          ></iframe>
         </div>
   
         <div className="object-box">
-          <button onMouseDown={handleResetYawPress} onMouseUp={handleResetYawRelease} className="reset-yaw-button">Reset Yaw</button>
+          <button
+            onMouseDown={handleResetYawPress}
+            onMouseUp={handleResetYawRelease}
+            className="reset-yaw-button"
+          >
+            Reset Yaw
+          </button>
           <Canvas style={{ height: "100%", width: "100%" }}>
             <ambientLight />
             <pointLight position={[10, 10, 10]} />
@@ -225,7 +265,9 @@ const Box = ({ roll, pitch, yaw }) => {
         <div className="status-box">
           <h3>Controller Info</h3>
           <div className="key-pressed">Key Pressed: {keyPressed || "None"}</div>
-          <div className="ESP32-response">ESP32 Response: {renderResponseData(responseData)}</div>
+          <div className="ESP32-response">
+            ESP32 Response: {renderResponseData(responseData)}
+          </div>
           <div>Controller Status: {controllerConnected ? "Connected" : "Not Connected"}</div>
           <div>Controller Buttons Pressed: {buttonPressedText}</div>
           <div className="controller-axis-data">
@@ -235,7 +277,7 @@ const Box = ({ roll, pitch, yaw }) => {
             <div>Axis RY: {controllerData.axes[3]?.value}</div>
           </div>
         </div>
-
+  
         <div className="robot-info-box">
           <h3>Robot Info</h3>
           <p>Temperature: {imuData.temperature.toFixed(2)} °C</p>
@@ -244,7 +286,7 @@ const Box = ({ roll, pitch, yaw }) => {
           <p>Run time : 00:00:00</p>
           <p>Serial Monitor</p>
         </div>
-
+  
         <div className="servo-data-box">
           <h3>Servo Data</h3>
           <div>Servo 1: 90°</div>

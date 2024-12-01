@@ -16,10 +16,12 @@ function App() {
   const [controllerDataSentTime, setControllerDataSentTime] = useState(0);
   const [keyAlreadySent, setKeyAlreadySent] = useState(false);
   const [ipAddress, setIpAddress] = useState("");
+  const [batteryData, setBatteryData] = useState({ voltage: 0, percentage: 0 });
 
   const esp32KeyUrl = useMemo(() => `http://${ipAddress}/sendKey`, [ipAddress]);
   const esp32ImuUrl = useMemo(() => `http://${ipAddress}/getIMU`, [ipAddress]);
   const esp32ControllerUrl = useMemo(() => `http://${ipAddress}/sendControllerData`, [ipAddress]);
+  const esp32BatteryUrl = useMemo(() => `http://${ipAddress}/getBattery`, [ipAddress]);
 
   const buttonNames = useMemo(() => ({
     0: "A", 1: "B", 2: "X", 3: "Y", 4: "LB", 5: "RB", 6: "LT", 7: "RT", 8: "View", 9: "Menu", 10: "Left Stick", 11: "Right Stick", 12: "Up", 13: "Down", 14: "Left", 15: "Right",
@@ -41,13 +43,22 @@ function App() {
   }, [esp32ImuUrl]);
 
   const sendDataToESP32 = useCallback((data) => {
-    axios.post(esp32KeyUrl, data, { headers: { "Content-Type": "text/plain" } })
-      .then(response => setResponseData(response.data))
-      .catch(error => {
-        console.error("Error sending data to ESP32:", error);
-        setResponseData("Error communicating with ESP32");
-      });
-  }, [esp32KeyUrl]);
+    const currentTime = Date.now();
+    
+    // Check if at least 50ms have passed since the last send
+    if (currentTime - controllerDataSentTime >= 50) {
+      axios.post(esp32KeyUrl, data, { headers: { "Content-Type": "text/plain" } })
+        .then(response => setResponseData(response.data))
+        .catch(error => {
+          console.error("Error sending data to ESP32:", error);
+          setResponseData("Error communicating with ESP32");
+        });
+  
+      // Update the last sent time
+      setControllerDataSentTime(currentTime);
+    }
+  }, [esp32KeyUrl, controllerDataSentTime]);
+  
 
   const sendControllerDataToESP32 = useCallback(() => {
     const currentTime = Date.now();
@@ -67,12 +78,6 @@ function App() {
     }
   }, [controllerData, esp32ControllerUrl, controllerDataSentTime, lastSentControllerData]);
 
-  useEffect(() => {
-    if (controllerConnected) {
-      sendControllerDataToESP32();
-    }
-  }, [controllerData, controllerConnected, sendControllerDataToESP32]);
-
   const fetchIMUData = useCallback(() => {
     axios.get(esp32ImuUrl)
       .then(response => {
@@ -89,6 +94,31 @@ function App() {
       .catch(error => console.error("Error fetching IMU data from ESP32:", error));
   }, [esp32ImuUrl]);
 
+  const fetchBatteryData = useCallback(() => {
+    axios.get(esp32BatteryUrl)
+      .then(response => {
+        const data = response.data;
+        if (data?.voltage !== undefined && data?.percentage !== undefined) {
+          setBatteryData({
+            voltage: parseFloat(data.voltage),
+            percentage: parseInt(data.percentage, 10),
+          });
+        }
+      })
+      .catch(error => console.error("Error fetching battery data from ESP32:", error));
+  }, [esp32BatteryUrl]);
+
+  useEffect(() => {
+    const batteryInterval = setInterval(fetchBatteryData, 5000); // Update every 5 seconds
+    return () => clearInterval(batteryInterval);
+  }, [fetchBatteryData]);
+
+  useEffect(() => {
+    if (controllerConnected) {
+      sendControllerDataToESP32();
+    }
+  }, [controllerData, controllerConnected, sendControllerDataToESP32]);
+  
   useEffect(() => {
     const connectionInterval = setInterval(checkConnection, 1000);
     const imuInterval = setInterval(fetchIMUData, 50);
@@ -281,8 +311,8 @@ const Box = ({ roll, pitch, yaw }) => {
         <div className="robot-info-box">
           <h3>Robot Info</h3>
           <p>Temperature: {imuData.temperature.toFixed(2)} °C</p>
-          <p>Battery Voltage : 12.6 Volts</p>
-          <p>Battery Percentage : 100%</p>
+          <p>Battery Voltage: {batteryData.voltage.toFixed(2)}V</p>
+          <p>Battery Percentage: {batteryData.percentage}%</p>
           <p>Run time : 00:00:00</p>
           <p>Serial Monitor</p>
         </div>

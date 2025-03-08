@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/moairairang/DogRobotUI/static/css/main.66552885.css",
-    "main.js": "/moairairang/DogRobotUI/static/js/main.45d918fc.js",
-    "static/js/453.785134cd.chunk.js": "/moairairang/DogRobotUI/static/js/453.785134cd.chunk.js",
-    "index.html": "/moairairang/DogRobotUI/index.html",
-    "main.66552885.css.map": "/moairairang/DogRobotUI/static/css/main.66552885.css.map",
-    "main.45d918fc.js.map": "/moairairang/DogRobotUI/static/js/main.45d918fc.js.map",
-    "453.785134cd.chunk.js.map": "/moairairang/DogRobotUI/static/js/453.785134cd.chunk.js.map"
+    "main.css": "/DogRobotUI/static/css/main.66552885.css",
+    "main.js": "/DogRobotUI/static/js/main.cb1571f8.js",
+    "static/js/453.785134cd.chunk.js": "/DogRobotUI/static/js/453.785134cd.chunk.js",
+    "index.html": "/DogRobotUI/index.html",
+    "main.66552885.css.map": "/DogRobotUI/static/css/main.66552885.css.map",
+    "main.cb1571f8.js.map": "/DogRobotUI/static/js/main.cb1571f8.js.map",
+    "453.785134cd.chunk.js.map": "/DogRobotUI/static/js/453.785134cd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.66552885.css",
-    "static/js/main.45d918fc.js"
+    "static/js/main.cb1571f8.js"
   ]
 }
